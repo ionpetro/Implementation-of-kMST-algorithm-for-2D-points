@@ -1,5 +1,5 @@
 import pprint
-import itertools
+import math
 
 input_file = '../tests/points.txt'
 # Text format
@@ -25,8 +25,40 @@ def create_pairs(point):
             list_of_pairs.append([point[p1], point[p2]])
     return list_of_pairs
 
-def kMST(point):
-    list_of_pairs = create_pairs(point)
-    return list_of_pairs
+def find_center(x1, x2, y1, y2):
+    x_m_point = (x1 + x2)/2
+    y_m_point = (y1 + y2)/2
+    return x_m_point, y_m_point
 
-pprint.pprint(kMST(point))
+
+
+def kMST(point, k):
+    print(point)
+    list_of_pairs = create_pairs(point)
+    for pair in list_of_pairs:
+        x1 = pair[0][0]
+        x2 = pair[1][0]
+        y1 = pair[0][1]
+        y2 = pair[1][1]
+        slope = (y1 - y2)/(x1 - x2)
+        distance = math.sqrt(((x2-x1)**2)+((y2-y1)**2))
+        # let's say we choose the first point
+        print("line: y - " + str(y1) + " = " + str(slope) + "(x-" + str(x1) +")") 
+        diameter =  math.sqrt(3)*distance
+        radius = diameter/2
+        mid_x, mid_y = find_center(x1, x2, y1, y2)
+        for p in point:
+            if point == [x1, y1] or point == [x2, y2]:
+                continue
+            else:
+                x = p[0]
+                y = p[1]
+                if ((x - mid_x)**2 + (y - mid_y)**2) < radius**2:
+                    print(True)
+                else:
+                    print(False)
+        # A = (π/4) × D^2
+        # circle_area = (math.pi/4) * diameter
+        
+k = 2
+kMST(point, k)
