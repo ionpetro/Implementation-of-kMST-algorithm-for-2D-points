@@ -30,6 +30,11 @@ def find_center(x1, x2, y1, y2):
     y_m_point = (y1 + y2)/2
     return x_m_point, y_m_point
 
+def checkSubset(subS, k):
+    if len(subS) > k:
+        return True
+    else:
+        return False
 
 
 def kMST(point, k):
@@ -47,16 +52,24 @@ def kMST(point, k):
         diameter =  math.sqrt(3)*distance
         radius = diameter/2
         mid_x, mid_y = find_center(x1, x2, y1, y2)
+        subS = []
         for p in point:
             if point == [x1, y1] or point == [x2, y2]:
+                # It's the same point
                 continue
             else:
+                # check if the point is inside the circle
                 x = p[0]
                 y = p[1]
                 if ((x - mid_x)**2 + (y - mid_y)**2) < radius**2:
-                    print(True)
+                    subS.append([x, y])
                 else:
                     print(False)
+        if not checkSubset(subS, k):
+            # The subSet contains fewer than k points
+            continue
+        else:
+            pass
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
