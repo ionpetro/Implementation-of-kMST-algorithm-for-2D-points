@@ -43,9 +43,9 @@ def square(radius, mid_x, mid_y):
     # top left coordinate
     squareDic[tl] = (mid_x + radius, mid_y + radius)   
     # bottom right coordinate
-    squareDic[br] = (mid_x + radius, mid_y + radius)
+    squareDic[br] = (mid_x + radius, mid_y - radius)
     # bottom left coordinate
-    squareDic[bl] = (mid_x + radius, mid_y + radius)
+    squareDic[bl] = (mid_x - radius, mid_y - radius)
     return squareDic
 
 
@@ -81,7 +81,7 @@ def kMST(point, k):
             # The subSet contains fewer than k points
             continue
         else:
-            squareDic = {}
+            # create circumscribing square
             squareDic = square(radius, mid_x, mid_y)
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
