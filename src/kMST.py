@@ -31,10 +31,22 @@ def find_center(x1, x2, y1, y2):
     return x_m_point, y_m_point
 
 def checkSubset(subS, k):
-    if len(subS) > k:
+    if len(subS) >= k:
         return True
-    else:
-        return False
+    return False
+
+def square(radius, mid_x, mid_y):
+    squareDic = {}
+    tr, tl, br, bl = 0, 0, 0, 0
+    #top right coordinate
+    squareDic[tr] = (mid_x + radius, mid_y - radius)
+    # top left coordinate
+    squareDic[tl] = (mid_x + radius, mid_y + radius)   
+    # bottom right coordinate
+    squareDic[br] = (mid_x + radius, mid_y + radius)
+    # bottom left coordinate
+    squareDic[bl] = (mid_x + radius, mid_y + radius)
+    return squareDic
 
 
 def kMST(point, k):
@@ -69,7 +81,8 @@ def kMST(point, k):
             # The subSet contains fewer than k points
             continue
         else:
-            pass
+            squareDic = {}
+            squareDic = square(radius, mid_x, mid_y)
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
