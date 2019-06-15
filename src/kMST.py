@@ -59,8 +59,25 @@ def subSquares(diameter, side, rootSquare):
     #calculate the number of squares
     subSquares = {}
     sqNum = numberofSquares(diameter, side)
-    for i in range(int(sqNum)):
-        subSquares[i] = 'coordiates'
+    count = 0
+    x1 = rootSquare['bl'][0]
+    save = x1
+    x2 = rootSquare['bl'][1]
+    y1 = rootSquare['tr'][0]
+    y2 = rootSquare['tr'][1]
+    print(int(sqNum))
+    for _ in range(int(sqNum)//2):
+        dic = {}
+        for _ in range(int(sqNum)//2):
+            dic['bl'] = [x1,y1]
+            dic['tr'] = [x1+side,y1+side]
+            # here I am not taking angle into consideration
+            # i should calculate angle of the square in reference with
+            # a 0 degree line 
+            subSquares[count] = dic
+            x1 = x1+side
+        x1 = save
+        y1 = y1 + side
     return subSquares
 
 
@@ -97,6 +114,7 @@ def kMST(point, k):
                     subS.append([x, y])
         if not checkSubset(subS, k):
             # The subSet contains fewer than k points
+            print("pair", pair, "failed!!")
             continue
         else:
             # create circumscribing square
@@ -107,6 +125,7 @@ def kMST(point, k):
             side = diameter/math.sqrt(k)
             x = subSquares(diameter, side, rootSquare)
             print("subsquares", x)
+            print("__________________\n")
             # print("the side is:", side)
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
