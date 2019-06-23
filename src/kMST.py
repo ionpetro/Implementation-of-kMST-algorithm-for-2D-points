@@ -77,8 +77,8 @@ def subSquares(diameter, rootSquare, k, angle):
     x1 = rootSquare['b'][0]
     y1 = rootSquare['b'][1] 
     # TODO: It seems that I don't need to have the top right coordinate from the squareRoot
-    # TODO: Or I have done a mistake
-    
+    # TODO: Or I have done a mistake!
+
     # x2 = rootSquare['t'][0]
     # y2 = rootSquare['t'][1]
     starting_x = x1
@@ -109,7 +109,27 @@ def subSquares(diameter, rootSquare, k, angle):
             # print("I got in else")
             # keep with the same y and change x
     print("subSquares", subSquares)
-    return
+    return subSquares
+
+def checkforPoints(subSq, point):
+    pointsPerSquare = {}
+    pickedPoints = {}
+    for key in subSq:
+        x1 = subSq[key]['b'][0]
+        y1 = subSq[key]['b'][1]
+        x2 = subSq[key]['t'][0]
+        y2 = subSq[key]['t'][1]
+        count = 0
+        for p in point:
+            x = p[0]
+            y = p[1]
+            if (x > x1 and x < x2 and y > y1 and y < y2): 
+                # This means that the point is inside the square
+                count += 1
+                pickedPoints[key] = p
+                # print("the point", p, "is inside the square", subSq[key])
+            pointsPerSquare[key] = count
+    return pointsPerSquare, pickedPoints
 
 
 def kMST(point, k):
@@ -160,13 +180,15 @@ def kMST(point, k):
             print("this is the rootSquare")
             pprint.pprint(rootSquare)
             # This is the subsquare side (d/root(k))
-            x = subSquares(diameter, rootSquare, k, angle)
-            # print("subsquares", x)
+            subSq = subSquares(diameter, rootSquare, k, angle)
+            pointsPerSquare, pickedPoints = checkforPoints(subSq, point)
+            
+            print(pointsPerSquare, pickedPoints)
             print("__________________\n")
             # print("the side is:", side)
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
-k = 2
+k = 4
 kMST(point, k)
