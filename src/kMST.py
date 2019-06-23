@@ -84,8 +84,8 @@ def subSquares(diameter, rootSquare, k, angle):
     starting_x = x1
     starting_y = y1
     save_x, save_y = starting_x, starting_y
+    # I am having check number of squares per line in my shape
     check = int(math.sqrt(k))
-    print("This is my check", check)
     for i in range(1, k+1):
         dic = {}
         dic['b'] = [starting_x, starting_y]
@@ -124,6 +124,7 @@ def checkforPoints(subSq, point):
         for p in point:
             x = p[0]
             y = p[1]
+            # TODO: this does not work with rotated squares
             if (x >= x1 and x <= x2 and y >= y1 and y <= y2): 
                 # This means that the point is inside the square
                 count += 1
@@ -184,8 +185,17 @@ def kMST(point, k):
             # This is the subsquare side (d/root(k))
             subSq = subSquares(diameter, rootSquare, k, angle)
             pointsPerSquare, pickedPoints = checkforPoints(subSq, point)
-
             print(pointsPerSquare, pickedPoints)
+            sortedpointsPerSquare = sorted(pointsPerSquare, key=pointsPerSquare.get, reverse= True)
+            print("These are the sorted ones", sortedpointsPerSquare)
+            pointCount = 0
+            i = 0
+            try:       
+                while pointCount < k:
+                    pointCount += pointsPerSquare[sortedpointsPerSquare[i]]    
+                    i += 1
+            except IndexError:
+                print("There are not enough points to the Square!")
             print("__________________\n")
             # print("the side is:", side)
             # print("the radius is: ", radius)
