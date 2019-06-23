@@ -25,8 +25,6 @@ def create_pairs(point):
             list_of_pairs.append([point[p1], point[p2]])
     return list_of_pairs
 
-#TODO TAKE INTO CONSIDERATION THE ANGLE OF THE POINTS
-
 def find_center(x1, x2, y1, y2):
     x_m_point = (x1 + x2)/2
     y_m_point = (y1 + y2)/2
@@ -41,7 +39,7 @@ def checkSubset(subS, k):
 def edgepair(pair, diameter, distance, angle):
     edgepair = []
     distance_to_edge = (diameter - distance) / 2
-    print("this is the distance to edge", distance_to_edge)
+    # print("this is the distance to edge", distance_to_edge)
     x1 = pair[0][0] - math.cos(math.radians(angle)) * distance_to_edge
     x2 = pair[1][0] + math.cos(math.radians(angle)) * distance_to_edge
     y1 = pair[0][1] - math.sin(math.radians(angle)) * distance_to_edge
@@ -59,45 +57,37 @@ def square(radius, edgepair, angle):
     bottom_angle = -90 + angle
     top_angle = 90 + angle
     
-    #top right coordinate
     # bottom left coordinate
-    rootSquare['b'] = (radius * math.cos(math.radians(bottom_angle)) + x1, radius * math.sin(math.radians(bottom_angle)) + y1)
-    rootSquare['t'] = (radius * math.cos(math.radians(top_angle)) + x2, radius * math.sin(math.radians(top_angle)) + y2)
+    rootSquare['b'] = (radius * math.cos(math.radians(bottom_angle)) + x1, \
+         radius * math.sin(math.radians(bottom_angle)) + y1)
+    #top right coordinate
+    rootSquare['t'] = (radius * math.cos(math.radians(top_angle)) + x2,\
+         radius * math.sin(math.radians(top_angle)) + y2)
     return rootSquare
 
+# I don't need to calculate the numberofSquare because 
+# I should devide the rootSquare into k squares
 
-def numberofSquares(diameter, side):
-    if diameter % side > 0:
-        numberofSquares = ((diameter // side) + 1) ** 2
-    else:
-        numberofSquares = (diameter // side) ** 2
-    return numberofSquares
+# def numberofSquares(diameter, side):
+#     if diameter % side > 0:
+#         numberofSquares = ((diameter // side) + 1) ** 2
+#     else:
+#         numberofSquares = (diameter // side) ** 2
+#     return numberofSquares
 
-def subSquares(diameter, side, rootSquare):
-    #calculate the number of squares
+def subSquares(diameter, rootSquare, k, angle):
+    '''
+    This method is supposed to devide the rootSquare into
+    k subsquares with side = dimaeter/root(k)
+    '''
+    side = diameter/math.sqrt(k)
     subSquares = {}
-    sqNum = numberofSquares(diameter, side)
-    count = 0
     x1 = rootSquare['b'][0]
-    save = x1
-    x2 = rootSquare['b'][1] #what happens with this bad boy
+    x2 = rootSquare['b'][1] 
     y1 = rootSquare['t'][0]
-    y2 = rootSquare['t'][1] #what happens with this bad boy
-    print(int(sqNum))
-    for _ in range(int(sqNum)//2):
-        dic = {}
-        for _ in range(int(sqNum)//2):
-            dic['b'] = [x1,y1]
-            dic['t'] = [x1+side,y1+side]
-            #TODO
-            # here I am not taking angle into consideration
-            # i should calculate angle of the square in reference with
-            # a 0 degree line 
-            subSquares[count] = dic
-            x1 = x1+side
-        x1 = save
-        y1 = y1 + side
-    return subSquares
+    y2 = rootSquare['t'][1]
+    # how do I cover the hole rootSquare?
+    return
 
 
 def kMST(point, k):
@@ -108,7 +98,7 @@ def kMST(point, k):
         x2 = pair[1][0]
         y1 = pair[0][1]
         y2 = pair[1][1]
-        print(pair)
+        print("pair", pair)
         # slope = (y1 - y2)/(x1 - x2)
         distance = math.sqrt(((x2-x1)**2)+((y2-y1)**2))
         # let's say we choose the first point
@@ -133,21 +123,22 @@ def kMST(point, k):
                     subS.append([x, y])
         if not checkSubset(subS, k):
             # The subSet contains fewer than k points
-            print("pair", pair, "failed!!")
+            # print("pair", pair, "failed!!")
             continue
         else:
             # here I calculate the entry angle
             angle = math.degrees(math.atan2(y2-y1,x2-x1))
+            print("This is the angle", angle)
             # create circumscribing square
             # print("I'm here with subset", subS)
             edgep = edgepair(pair, diameter, distance, angle)
-            print("this is the edgesquare")
-            pprint.pprint(edgep)
+            # print("this is the edgesquare")
+            # pprint.pprint(edgep)
             rootSquare = square(radius, edgep, angle)
             print("this is the rootSquare")
             pprint.pprint(rootSquare)
-            side = diameter/math.sqrt(k)
-            x = subSquares(diameter, side, rootSquare)
+            # This is the subsquare side (d/root(k))
+            x = subSquares(diameter, rootSquare, k, angle)
             # print("subsquares", x)
             print("__________________\n")
             # print("the side is:", side)
@@ -155,5 +146,5 @@ def kMST(point, k):
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
-k = 4
+k = 3
 kMST(point, k)
