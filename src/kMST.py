@@ -65,28 +65,50 @@ def square(radius, edgepair, angle):
          radius * math.sin(math.radians(top_angle)) + y2)
     return rootSquare
 
-# I don't need to calculate the numberofSquare because 
-# I should devide the rootSquare into k squares
-
-# def numberofSquares(diameter, side):
-#     if diameter % side > 0:
-#         numberofSquares = ((diameter // side) + 1) ** 2
-#     else:
-#         numberofSquares = (diameter // side) ** 2
-#     return numberofSquares
-
 def subSquares(diameter, rootSquare, k, angle):
     '''
     This method is supposed to devide the rootSquare into
-    k subsquares with side = dimaeter/root(k)
+    k subsquares with side = diameter/root(k)
     '''
     side = diameter/math.sqrt(k)
+    diagonial_length = math.sqrt(side ** 2 + side ** 2)
+    subAngle = angle + 45
     subSquares = {}
     x1 = rootSquare['b'][0]
-    x2 = rootSquare['b'][1] 
-    y1 = rootSquare['t'][0]
-    y2 = rootSquare['t'][1]
-    # how do I cover the hole rootSquare?
+    y1 = rootSquare['b'][1] 
+    # TODO: It seems that I don't need to have the top right coordinate from the squareRoot
+    # TODO: Or I have done a mistake
+    
+    # x2 = rootSquare['t'][0]
+    # y2 = rootSquare['t'][1]
+    starting_x = x1
+    starting_y = y1
+    save_x, save_y = starting_x, starting_y
+    check = int(math.sqrt(k))
+    print("This is my check", check)
+    for i in range(1, k+1):
+        dic = {}
+        dic['b'] = [starting_x, starting_y]
+        dic['t'] = [diagonial_length * math.cos(math.radians(subAngle)) + starting_x, diagonial_length * math.sin(math.radians(subAngle)) + starting_y]
+        subSquares[i] = dic
+        # the point of this if statement is to divide the rootSquare
+        # into k squares where horizontal and vertical squares add up to k
+        # so each line will contain root(k) squares and then I will change the line
+        if i % check == 0:
+            # change line (check the y coordinate)
+            # adding 90 degrees to the angle because I want to move to the y axis
+            next_starting_x = side * math.cos(math.radians(angle + 90)) + save_x
+            next_starting_y = side * math.sin(math.radians(angle + 90)) + save_y 
+            starting_x, starting_y = next_starting_x, next_starting_y
+            save_x, save_y = starting_x, starting_y
+            # print("I got in if")
+        else:
+            next_starting_x = side * math.cos(math.radians(angle)) + starting_x
+            next_starting_y = side * math.sin(math.radians(angle)) + starting_y 
+            starting_x, starting_y = next_starting_x, next_starting_y
+            # print("I got in else")
+            # keep with the same y and change x
+    print("subSquares", subSquares)
     return
 
 
@@ -146,5 +168,5 @@ def kMST(point, k):
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
-k = 3
+k = 2
 kMST(point, k)
