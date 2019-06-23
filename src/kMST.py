@@ -120,14 +120,16 @@ def checkforPoints(subSq, point):
         x2 = subSq[key]['t'][0]
         y2 = subSq[key]['t'][1]
         count = 0
+        points = []
         for p in point:
             x = p[0]
             y = p[1]
-            if (x > x1 and x < x2 and y > y1 and y < y2): 
+            if (x >= x1 and x <= x2 and y >= y1 and y <= y2): 
                 # This means that the point is inside the square
                 count += 1
-                pickedPoints[key] = p
+                points.append(p)
                 # print("the point", p, "is inside the square", subSq[key])
+            pickedPoints[key] = points  
             pointsPerSquare[key] = count
     return pointsPerSquare, pickedPoints
 
@@ -182,7 +184,7 @@ def kMST(point, k):
             # This is the subsquare side (d/root(k))
             subSq = subSquares(diameter, rootSquare, k, angle)
             pointsPerSquare, pickedPoints = checkforPoints(subSq, point)
-            
+
             print(pointsPerSquare, pickedPoints)
             print("__________________\n")
             # print("the side is:", side)
