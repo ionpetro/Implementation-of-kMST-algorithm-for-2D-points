@@ -190,12 +190,14 @@ def kMST(point, k):
             print("These are the sorted ones", sortedpointsPerSquare)
             pointCount = 0
             i = 0
+            #Error handling when sortedpointsPerSquare list is out of range
             try:       
                 while pointCount < k:
                     pointCount += pointsPerSquare[sortedpointsPerSquare[i]]    
                     i += 1
             except IndexError:
                 print("There are not enough points to the Square!")
+                print("Well something is wrong here")
             print("__________________\n")
             # print("the side is:", side)
             # print("the radius is: ", radius)
