@@ -6,8 +6,6 @@ You can find the **paper** on the Cornell University [arXin.org](https://arxiv.o
 
 This work was given as a bonus project from [Panos Louridas](https://github.com/louridas) in course **Algorithms and Data Structures** during by studies on *Department of Management Science and Technology*, Athens University of Economics and Business [(aueb)](www.aueb.gr).
 
-You can find the assignment [here](http://nbviewer.jupyter.org/github/dmst-algorithms-course/assignment-2017-bonus/blob/master/assignment_2017_bonus.ipynb).
-
 ## Prerequesities
 
 Install the following libraries:
