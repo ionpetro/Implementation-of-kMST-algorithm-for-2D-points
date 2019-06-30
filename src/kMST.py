@@ -119,7 +119,7 @@ def checkforPoints(subSq, point, side, angle):
         y1 = subSq[key]['b'][1]
         x2 = subSq[key]['t'][0]
         y2 = subSq[key]['t'][1]
-        # Here i might need to calculate the x3,y3 and x4,y4
+        # Here i need to calculate the x3,y3 and x4,y4
         # for the rotated squares
         x3 = x1 + side * math.cos(math.radians(angle + 90)) #top left coordinate
         y3 = y1 + side * math.sin(math.radians(angle + 90)) #top left coordinate
@@ -135,39 +135,37 @@ def checkforPoints(subSq, point, side, angle):
             y = p[1]
             # print("THIS IS Y", y)
             #square sides
-            a1 = math.sqrt((x1-x3)**2 + (y1-y3)**2)
+            a1 = math.sqrt((x2-x3)**2 + (y2-y3)**2)
             a2 = math.sqrt((x2-x4)**2 + (y2-y4)**2)
             a3 = math.sqrt((x3-x1)**2 + (y3-y1)**2)
-            a4 = math.sqrt((x4-x2)**2 + (y4-y2)**2)
-            print("This is a1", a1)
-            print("This is a2", a2)
-            print("This is a3", a3)
-            print("This is a4", a4)
+            a4 = math.sqrt((x4-x1)**2 + (y4-y1)**2)
             print("This is side", side)
             # TODO: problem: side is not equal to a1,a2,a3,a4
             # TODO: MAYBE THE PROBLEM IS THAT I AM USING DIAGONIAL PARAMETERS
             # TODO: FROM HERE TILL IF STATEMENT I SHOULD CHANGE THE x1,x2,...y3,y4
+            # The area of the squale
+            A = a1 * a2
             # Calculate the length of the line segments
             b1 = math.sqrt((x1-x)**2 + (y1-y)**2)
             b2 = math.sqrt((x2-x)**2 + (y2-y)**2)
             b3 = math.sqrt((x3-x)**2 + (y3-y)**2)
             b4 = math.sqrt((x4-x)**2 + (y4-y)**2)
             # calculate the areas of the Triangls using Heron's formula
-            u1 = (a1 + b1 + b2)/2
-            u2 = (a2 + b2 + b3)/2
-            u3 = (a3 + b3 + b4)/2
-            u4 = (a4 + b4 + b1)/2
-            A = a1 * a2
-            A1 = math.sqrt(u1*(u1-a1)*(u1-b1)*(u1-b2))
-            A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b3))
-            A3 = math.sqrt(u3*(u3-a3)*(u3-b3)*(u3-b4))
-            A4 = math.sqrt(u4*(u4-a4)*(u4-b4)*(u4-b1))
+            u1 = (a1 + b2 + b3)/2
+            u2 = (a2 + b2 + b4)/2
+            u3 = (a3 + b1 + b3)/2
+            u4 = (a4 + b1 + b4)/2
+            A1 = math.sqrt(u1*(u1-a1)*(u1-b2)*(u1-b3))
+            A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b4))
+            A3 = math.sqrt(u3*(u3-a3)*(u3-b1)*(u3-b3))
+            A4 = math.sqrt(u4*(u4-a4)*(u4-b1)*(u4-b4))
             if A == (A1 + A2 + A3 + A4):
                 # This means that the point is inside the square
                 count += 1
                 points.append(p)
                 # print("the point", p, "is inside the square", subSq[key])
             else:
+                print("Not inside the square!!")
                 # The point is not inside the square
                 pass
             pickedPoints[key] = points  
