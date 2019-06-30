@@ -151,10 +151,13 @@ def checkforPoints(subSq, point, side, angle):
             u2 = (a2 + b2 + b4)/2
             u3 = (a3 + b1 + b3)/2
             u4 = (a4 + b1 + b4)/2
-            A1 = math.sqrt(u1*(u1-a1)*(u1-b2)*(u1-b3))
-            A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b4))
-            A3 = math.sqrt(u3*(u3-a3)*(u3-b1)*(u3-b3))
-            A4 = math.sqrt(u4*(u4-a4)*(u4-b1)*(u4-b4))
+            try:
+                A1 = math.sqrt(u1*(u1-a1)*(u1-b2)*(u1-b3))
+                A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b4))
+                A3 = math.sqrt(u3*(u3-a3)*(u3-b1)*(u3-b3))
+                A4 = math.sqrt(u4*(u4-a4)*(u4-b1)*(u4-b4))
+            except ValueError:
+                print("Bug on the Heron's formula implementation")
             triangleArea = (A1 + A2 + A3 + A4)
             # Accurancy up to 2 decimals
             if round(A, 2) == round(triangleArea, 2):
@@ -200,6 +203,7 @@ def chooseSells(sortedpointsPerSquare, pickedPoints, k):
 
 def kMST(point, k):
     # print(point)
+    results = []
     list_of_pairs = create_pairs(point)
     for pair in list_of_pairs:
         x1 = pair[0][0]
@@ -278,11 +282,22 @@ def kMST(point, k):
             print(x)
             tcsr = minimum_spanning_tree(x)
             tcsr.toarray().astype(float) 
-            print(tcsr)      
+            results.append(tcsr.sum())
+            print("these are the results", results)
+
+    try:
+        x = min(results)
+    except ValueError:
+        print("Algorithm prerequisities have not been met!")
+        print("Maybe k value is set too high")        
+    return x
+    
+
             # print("the side is:", side)
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
         
-k = 4
-kMST(point, k)
+k = 5
+print("This is the kMST result: ")
+print(kMST(point, k))
