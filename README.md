@@ -39,7 +39,7 @@ positional arguments:
   input_file  Please insert an input txt file with points
 ```
 
-**Example:** For the file [points.txt](test/points.txt)
+**Example:** For the file [points.txt](tests/points.txt)
 
 ```
 python kMST.py 4 ../test/points.txt
