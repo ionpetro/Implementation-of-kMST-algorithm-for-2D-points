@@ -115,6 +115,7 @@ def checkforPoints(subSq, point, side, angle):
     pointsPerSquare = {}
     pickedPoints = {}
     for key in subSq:
+        print("inside", subSq[key])
         x1 = subSq[key]['b'][0]
         y1 = subSq[key]['b'][1]
         x2 = subSq[key]['t'][0]
@@ -125,24 +126,17 @@ def checkforPoints(subSq, point, side, angle):
         y3 = y1 + side * math.sin(math.radians(angle + 90)) #top left coordinate
         x4 = x2 + side * math.cos(math.radians(angle - 90)) #bottom right coordinate
         y4 = y2 + side * math.sin(math.radians(angle - 90)) #botom right coordinate
-        # print("x3", x3, "y3", y3)
-        # print("x4", x4, "y4", y4)
         count = 0
         points = []
         for p in point:
             x = p[0]
-            # print("THIS IS X", x)
             y = p[1]
-            # print("THIS IS Y", y)
+            print("checking point:", p)
             #square sides
             a1 = math.sqrt((x2-x3)**2 + (y2-y3)**2)
             a2 = math.sqrt((x2-x4)**2 + (y2-y4)**2)
             a3 = math.sqrt((x3-x1)**2 + (y3-y1)**2)
             a4 = math.sqrt((x4-x1)**2 + (y4-y1)**2)
-            print("This is side", side)
-            # TODO: problem: side is not equal to a1,a2,a3,a4
-            # TODO: MAYBE THE PROBLEM IS THAT I AM USING DIAGONIAL PARAMETERS
-            # TODO: FROM HERE TILL IF STATEMENT I SHOULD CHANGE THE x1,x2,...y3,y4
             # The area of the squale
             A = a1 * a2
             # Calculate the length of the line segments
@@ -159,18 +153,47 @@ def checkforPoints(subSq, point, side, angle):
             A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b4))
             A3 = math.sqrt(u3*(u3-a3)*(u3-b1)*(u3-b3))
             A4 = math.sqrt(u4*(u4-a4)*(u4-b1)*(u4-b4))
-            if A == (A1 + A2 + A3 + A4):
+            triangleArea = (A1 + A2 + A3 + A4)
+            # Accurancy up to 2 decimals
+            if round(A, 2) == round(triangleArea, 2):
                 # This means that the point is inside the square
                 count += 1
                 points.append(p)
+                # print("This one got in")
                 # print("the point", p, "is inside the square", subSq[key])
             else:
-                print("Not inside the square!!")
+                # print("The point", p, "is not inside the square!!")
                 # The point is not inside the square
+                # print(p ,"failed because", A, "not equal to", (A1 + A2 + A3 + A4))
                 pass
-            pickedPoints[key] = points  
-            pointsPerSquare[key] = count
+        pickedPoints[key] = points  
+        pointsPerSquare[key] = count
     return pointsPerSquare, pickedPoints
+
+def chooseSells(sortedpointsPerSquare, pickedPoints, k):
+    count = 0
+    i = 0
+    selectedSquares = []
+    while count < k:
+        indexofpoints = sortedpointsPerSquare[i]
+        points = pickedPoints[indexofpoints]
+        for j in range(len(points)):
+            # check for duplicate values 
+            if points[j] not in selectedSquares:
+                selectedSquares.append(points[j])
+            else:
+                count -= 1
+        count += len(points)
+        i += 1
+        # this if statement discard the last N iteams
+        # from a list if it exceeds the number k
+        # not tested code
+        if count > k:
+            difference = count - k
+            del selectedSquares[-difference:]
+    return selectedSquares
+    # print("megethos", len(selectedSquares))
+    # print("selectedSquares", selectedSquares)
 
 
 def kMST(point, k):
@@ -224,20 +247,19 @@ def kMST(point, k):
             subSq = subSquares(diameter, rootSquare, k, angle)
             side = diameter/math.sqrt(k)
             pointsPerSquare, pickedPoints = checkforPoints(subSq, point, side, angle)
-            print(pointsPerSquare, pickedPoints)
             sortedpointsPerSquare = sorted(pointsPerSquare, key=pointsPerSquare.get, reverse= True)
-            print("These are the sorted ones", sortedpointsPerSquare)
-            pointCount = 0
-            i = 0
-            #Error handling when sortedpointsPerSquare list is out of range
-            try:       
-                while pointCount < k:
-                    pointCount += pointsPerSquare[sortedpointsPerSquare[i]]    
-                    i += 1
-            except IndexError:
-                print("There are not enough points to the Square!")
-                print("Well something is wrong here")
-            print("__________________\n")
+            # print("These are the sorted ones", sortedpointsPerSquare)
+            print("These are the pickedPoints:", pickedPoints)
+            print("These are the sortedpoints:", sortedpointsPerSquare)
+            # #Error handling when sortedpointsPerSquare list is out of range
+            # try:       
+            #     while pointCount < k:
+            #         pointCount += pointsPerSquare[sortedpointsPerSquare[i]]    
+            #         i += 1
+            # except IndexError:
+            #     print("Something is wrong here!")
+            # print("__________________\n")
+            selectedSquares = chooseSells(sortedpointsPerSquare, pickedPoints, k)
             # print("the side is:", side)
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
