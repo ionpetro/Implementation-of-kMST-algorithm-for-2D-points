@@ -1,4 +1,3 @@
-import pprint
 import math
 import argparse
 import numpy as np
@@ -9,7 +8,7 @@ __author_ = "Ion Petropoulos"
 # parse the k value and the input file
 parser = argparse.ArgumentParser()
 parser.add_argument("k", help="Enter the k value")
-parser.add_argument("input_file", help="Please insert an input json file")
+parser.add_argument("input_file", help="Please insert an input txt file")
 args = parser.parse_args()
 
 input_file = args.input_file
@@ -143,7 +142,7 @@ def checkforPoints(subSq, point, side, angle):
     The method returns the points found on each subSquare and the number of points
     per subSquare
     The Heron's implementation is based on a post on Stack Exchange - Mathematics
-    https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+    https://math.stackexchange.com/q/190403
     '''
     pointsPerSquare = {}
     pickedPoints = {}
