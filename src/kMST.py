@@ -1,5 +1,7 @@
 import pprint
 import math
+import numpy as np
+from scipy.sparse.csgraph import minimum_spanning_tree
 
 input_file = '../tests/points1.txt'
 # Text format
@@ -260,6 +262,23 @@ def kMST(point, k):
             #     print("Something is wrong here!")
             # print("__________________\n")
             selectedSquares = chooseSells(sortedpointsPerSquare, pickedPoints, k)
+            print("SELECTED SQUARES", selectedSquares)
+            l = len(selectedSquares)
+            # zeros = np.zeros((l,l))
+            matrix = []
+            for i in range(l):
+                innerlist = []
+                for j in range(l):
+                    innerlist.append(math.hypot(selectedSquares[j][0] - selectedSquares[i][0], \
+                        selectedSquares[j][1] - selectedSquares[i][1]))
+                matrix.append(innerlist)
+
+            x = np.array(matrix)
+            x.reshape(l,l)
+            print(x)
+            tcsr = minimum_spanning_tree(x)
+            tcsr.toarray().astype(float) 
+            print(tcsr)      
             # print("the side is:", side)
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
