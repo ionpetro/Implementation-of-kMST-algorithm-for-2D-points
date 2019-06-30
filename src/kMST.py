@@ -1,9 +1,17 @@
 import pprint
 import math
+import argparse
 import numpy as np
 from scipy.sparse.csgraph import minimum_spanning_tree
 
-input_file = '../tests/points1.txt'
+__author_ = "Ion Petropoulos"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("k", help="Enter the k value")
+parser.add_argument("input_file", help="Please insert an input json file")
+args = parser.parse_args()
+
+input_file = args.input_file
 # Text format
 # 4.43 4.55
 # 6.43 3.22
@@ -33,7 +41,6 @@ def find_center(x1, x2, y1, y2):
     return x_m_point, y_m_point
 
 def checkSubset(subS, k):
-    # print("The subset is", subS)
     if len(subS) >= k:
         return True
     return False
@@ -110,14 +117,12 @@ def subSquares(diameter, rootSquare, k, angle):
             starting_x, starting_y = next_starting_x, next_starting_y
             # print("I got in else")
             # keep with the same y and change x
-    print("subSquares", subSquares)
     return subSquares
 
 def checkforPoints(subSq, point, side, angle):
     pointsPerSquare = {}
     pickedPoints = {}
     for key in subSq:
-        print("inside", subSq[key])
         x1 = subSq[key]['b'][0]
         y1 = subSq[key]['b'][1]
         x2 = subSq[key]['t'][0]
@@ -133,7 +138,6 @@ def checkforPoints(subSq, point, side, angle):
         for p in point:
             x = p[0]
             y = p[1]
-            print("checking point:", p)
             #square sides
             a1 = math.sqrt((x2-x3)**2 + (y2-y3)**2)
             a2 = math.sqrt((x2-x4)**2 + (y2-y4)**2)
@@ -179,23 +183,30 @@ def chooseSells(sortedpointsPerSquare, pickedPoints, k):
     count = 0
     i = 0
     selectedSquares = []
-    while count < k:
-        indexofpoints = sortedpointsPerSquare[i]
-        points = pickedPoints[indexofpoints]
-        for j in range(len(points)):
-            # check for duplicate values 
-            if points[j] not in selectedSquares:
-                selectedSquares.append(points[j])
-            else:
-                count -= 1
-        count += len(points)
-        i += 1
-        # this if statement discard the last N iteams
-        # from a list if it exceeds the number k
-        # not tested code
-        if count > k:
-            difference = count - k
-            del selectedSquares[-difference:]
+    try:
+        while count < k:
+                
+            indexofpoints = sortedpointsPerSquare[i]
+            points = pickedPoints[indexofpoints]
+            for j in range(len(points)):
+                # check for duplicate values 
+                if points[j] not in selectedSquares:
+                    selectedSquares.append(points[j])
+                else:
+                    count -= 1
+            count += len(points)
+            i += 1
+            # this if statement discard the last N iteams
+            # from a list if it exceeds the number k
+            # not tested code
+            if count > k:
+                difference = count - k
+                del selectedSquares[-difference:]
+    except IndexError as e:
+        print("Not enought k values were collected!")
+        print("Error type: ")
+        print(e)
+        quit()
     return selectedSquares
     # print("megethos", len(selectedSquares))
     # print("selectedSquares", selectedSquares)
@@ -210,7 +221,6 @@ def kMST(point, k):
         x2 = pair[1][0]
         y1 = pair[0][1]
         y2 = pair[1][1]
-        print("pair", pair)
         # slope = (y1 - y2)/(x1 - x2)
         distance = math.sqrt(((x2-x1)**2)+((y2-y1)**2))
         # let's say we choose the first point
@@ -240,23 +250,18 @@ def kMST(point, k):
         else:
             # here I calculate the entry angle
             angle = math.degrees(math.atan2(y2-y1,x2-x1))
-            print("This is the angle", angle)
             # create circumscribing square
             # print("I'm here with subset", subS)
             edgep = edgepair(pair, diameter, distance, angle)
             # print("this is the edgesquare")
             # pprint.pprint(edgep)
             rootSquare = square(radius, edgep, angle)
-            print("this is the rootSquare")
-            pprint.pprint(rootSquare)
             # This is the subsquare side (d/root(k))
             subSq = subSquares(diameter, rootSquare, k, angle)
             side = diameter/math.sqrt(k)
             pointsPerSquare, pickedPoints = checkforPoints(subSq, point, side, angle)
             sortedpointsPerSquare = sorted(pointsPerSquare, key=pointsPerSquare.get, reverse= True)
             # print("These are the sorted ones", sortedpointsPerSquare)
-            print("These are the pickedPoints:", pickedPoints)
-            print("These are the sortedpoints:", sortedpointsPerSquare)
             # #Error handling when sortedpointsPerSquare list is out of range
             # try:       
             #     while pointCount < k:
@@ -266,7 +271,6 @@ def kMST(point, k):
             #     print("Something is wrong here!")
             # print("__________________\n")
             selectedSquares = chooseSells(sortedpointsPerSquare, pickedPoints, k)
-            print("SELECTED SQUARES", selectedSquares)
             l = len(selectedSquares)
             # zeros = np.zeros((l,l))
             matrix = []
@@ -279,17 +283,16 @@ def kMST(point, k):
 
             x = np.array(matrix)
             x.reshape(l,l)
-            print(x)
             tcsr = minimum_spanning_tree(x)
             tcsr.toarray().astype(float) 
             results.append(tcsr.sum())
-            print("these are the results", results)
 
     try:
         x = min(results)
     except ValueError:
         print("Algorithm prerequisities have not been met!")
-        print("Maybe k value is set too high")        
+        print("Maybe k value is set too high")
+        quit()        
     return x
     
 
@@ -297,7 +300,7 @@ def kMST(point, k):
             # print("the radius is: ", radius)
         # A = (π/4) × D^2
         # circle_area = (math.pi/4) * diameter
-        
-k = 5
+     
 print("This is the kMST result: ")
+k = int(args.k)
 print(kMST(point, k))
