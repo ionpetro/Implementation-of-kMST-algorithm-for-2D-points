@@ -53,6 +53,6 @@ This is the kMST result:
 
 ## Acknowledgements
 
-The Minimum Spanning tree was implemented using the Prim's algorithm using [Kruskal algorithm](https://en.wikipedia.org/wiki/Kruskal%27s_algorithm) with the **scipy sparse csgraph** library
+* The Minimum Spanning tree was implemented using the Prim's algorithm using [Kruskal algorithm](https://en.wikipedia.org/wiki/Kruskal%27s_algorithm) with the **scipy sparse csgraph** library, you can find it here: [link](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.minimum_spanning_tree.html#scipy.sparse.csgraph.minimum_spanning_tree)
 
-You can find it here: [link](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.minimum_spanning_tree.html#scipy.sparse.csgraph.minimum_spanning_tree)
+* The Heron's implementation for checking if a point in inside a square or not, was based to a stack exchange post where you can find here: [link](https://math.stackexchange.com/q/190403)
