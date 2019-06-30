@@ -6,6 +6,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 
 __author_ = "Ion Petropoulos"
 
+# parse the k value and the input file
 parser = argparse.ArgumentParser()
 parser.add_argument("k", help="Enter the k value")
 parser.add_argument("input_file", help="Please insert an input json file")
@@ -16,8 +17,10 @@ input_file = args.input_file
 # 4.43 4.55
 # 6.43 3.22
 
-# read the points of the file and save them on a set
 def read_file(input_file):
+    '''
+    This method reads the points of the file and save them on a list
+    '''
     lines = []
     with open(input_file) as input_file:
         for line in input_file:
@@ -25,10 +28,10 @@ def read_file(input_file):
             lines.append([float(x),float(y)])
         return lines
 
-# save the set of points on a variable
-point = read_file(input_file)
-
 def create_pairs(point):
+    '''
+    This method creates all the possible pairs of points <Si, Sj>
+    '''
     list_of_pairs = []
     for p1 in range(len(point)):
         for p2 in range(p1 + 1, len(point)):
@@ -36,16 +39,27 @@ def create_pairs(point):
     return list_of_pairs
 
 def find_center(x1, x2, y1, y2):
+    '''
+    This method finds the center of a circle given two points
+    '''
     x_m_point = (x1 + x2)/2
     y_m_point = (y1 + y2)/2
     return x_m_point, y_m_point
 
 def checkSubset(subS, k):
+    '''
+    This method checks if the subSet contains fewer than k points,
+    according to step 2 of the algorithm
+    '''
     if len(subS) >= k:
         return True
     return False
 
 def edgepair(pair, diameter, distance, angle):
+    '''
+    This method calculates the endge points of the diameter, given two
+    points of a line
+    '''
     edgepair = []
     distance_to_edge = (diameter - distance) / 2
     # print("this is the distance to edge", distance_to_edge)
@@ -57,18 +71,22 @@ def edgepair(pair, diameter, distance, angle):
     return edgepair
 
 def square(radius, edgepair, angle):
+    '''
+    This method constructs a square that contains the bottom left and the
+    top right coordinate of the square
+    '''
     rootSquare = {}
     x1 = edgepair[0][0]
     x2 = edgepair[1][0]
     y1 = edgepair[0][1]
     y2 = edgepair[1][1]
-    # print("this is the angle", angle)
     bottom_angle = -90 + angle
     top_angle = 90 + angle
     
     # bottom left coordinate
     rootSquare['b'] = (radius * math.cos(math.radians(bottom_angle)) + x1, \
          radius * math.sin(math.radians(bottom_angle)) + y1)
+
     #top right coordinate
     rootSquare['t'] = (radius * math.cos(math.radians(top_angle)) + x2,\
          radius * math.sin(math.radians(top_angle)) + y2)
@@ -81,28 +99,27 @@ def subSquares(diameter, rootSquare, k, angle):
     '''
     side = diameter/math.sqrt(k)
     diagonial_length = math.sqrt(side ** 2 + side ** 2)
+    # We add 45 degrees to the angle because we are calculating the diagonial coordinate
     subAngle = angle + 45
     subSquares = {}
     x1 = rootSquare['b'][0]
     y1 = rootSquare['b'][1] 
-    # TODO: It seems that I don't need to have the top right coordinate from the squareRoot
-    # TODO: Or I have done a mistake!
+    # It seems that I don't need to have the top right coordinate from the squareRoot
 
-    # x2 = rootSquare['t'][0]
-    # y2 = rootSquare['t'][1]
     starting_x = x1
     starting_y = y1
     save_x, save_y = starting_x, starting_y
-    # I am having check number of squares per line in my shape
+    # Check the number of squares per line in my shape
     check = int(math.sqrt(k))
     for i in range(1, k+1):
         dic = {}
         dic['b'] = [starting_x, starting_y]
         dic['t'] = [diagonial_length * math.cos(math.radians(subAngle)) + starting_x, diagonial_length * math.sin(math.radians(subAngle)) + starting_y]
         subSquares[i] = dic
-        # the point of this if statement is to divide the rootSquare
+        # The point of this if statement is to divide the rootSquare
         # into k squares where horizontal and vertical squares add up to k
-        # so each line will contain root(k) squares and then I will change the line
+        # so each line will contain root(k) squares.
+        # This if statement check if the line needs to be changed 
         if i % check == 0:
             # change line (check the y coordinate)
             # adding 90 degrees to the angle because I want to move to the y axis
@@ -120,6 +137,14 @@ def subSquares(diameter, rootSquare, k, angle):
     return subSquares
 
 def checkforPoints(subSq, point, side, angle):
+    '''
+    This method, by implementing the Heron's formula, checks the subSquares
+    that have been created, and finds out what points are inside the subSquare
+    The method returns the points found on each subSquare and the number of points
+    per subSquare
+    The Heron's implementation is based on a post on Stack Exchange - Mathematics
+    https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+    '''
     pointsPerSquare = {}
     pickedPoints = {}
     for key in subSq:
@@ -155,6 +180,8 @@ def checkforPoints(subSq, point, side, angle):
             u2 = (a2 + b2 + b4)/2
             u3 = (a3 + b1 + b3)/2
             u4 = (a4 + b1 + b4)/2
+            # This Error Handler is used because the math.sqrt < 0
+            # This happend on some examples and it's probably a code bug
             try:
                 A1 = math.sqrt(u1*(u1-a1)*(u1-b2)*(u1-b3))
                 A2 = math.sqrt(u2*(u2-a2)*(u2-b2)*(u2-b4))
@@ -164,25 +191,29 @@ def checkforPoints(subSq, point, side, angle):
                 print("Bug on the Heron's formula implementation")
             triangleArea = (A1 + A2 + A3 + A4)
             # Accurancy up to 2 decimals
+            # This round up results to duplicate point values
+            # Which is handle on the chooseSells method
             if round(A, 2) == round(triangleArea, 2):
                 # This means that the point is inside the square
                 count += 1
                 points.append(p)
-                # print("This one got in")
-                # print("the point", p, "is inside the square", subSq[key])
-            else:
-                # print("The point", p, "is not inside the square!!")
+            # else:
                 # The point is not inside the square
-                # print(p ,"failed because", A, "not equal to", (A1 + A2 + A3 + A4))
-                pass
         pickedPoints[key] = points  
         pointsPerSquare[key] = count
     return pointsPerSquare, pickedPoints
 
+
 def chooseSells(sortedpointsPerSquare, pickedPoints, k):
+    '''
+    This method, takes as input the sorted squares that were picked and
+    return the chosen ones. When there are not enought choosen, an error
+    handler is implemented (maybe this needs some improvement for example
+    not allowing dublicate chechforPoints method)
+    '''
     count = 0
     i = 0
-    selectedSquares = []
+    selectedPoints = []
     try:
         while count < k:
                 
@@ -190,8 +221,8 @@ def chooseSells(sortedpointsPerSquare, pickedPoints, k):
             points = pickedPoints[indexofpoints]
             for j in range(len(points)):
                 # check for duplicate values 
-                if points[j] not in selectedSquares:
-                    selectedSquares.append(points[j])
+                if points[j] not in selectedPoints:
+                    selectedPoints.append(points[j])
                 else:
                     count -= 1
             count += len(points)
@@ -201,46 +232,42 @@ def chooseSells(sortedpointsPerSquare, pickedPoints, k):
             # not tested code
             if count > k:
                 difference = count - k
-                del selectedSquares[-difference:]
+                del selectedPoints[-difference:]
     except IndexError as e:
         print("Not enought k values were collected!")
         print("Error type: ")
         print(e)
         quit()
-    return selectedSquares
-    # print("megethos", len(selectedSquares))
-    # print("selectedSquares", selectedSquares)
+    return selectedPoints
 
 
-def kMST(point, k):
-    # print(point)
+def kMST(k):
+    '''
+    This method is implementing the kMST algorithm.
+    '''
+    # save the set of points on a variable
+    point = read_file(input_file)
     results = []
     list_of_pairs = create_pairs(point)
+    # for each possible pair
     for pair in list_of_pairs:
         x1 = pair[0][0]
         x2 = pair[1][0]
         y1 = pair[0][1]
         y2 = pair[1][1]
-        # slope = (y1 - y2)/(x1 - x2)
         distance = math.sqrt(((x2-x1)**2)+((y2-y1)**2))
-        # let's say we choose the first point
-        # print("line: y - " + str(y1) + " = " + str(slope) + "(x-" + str(x1) +")") 
         diameter =  math.sqrt(3)*distance
-        # print(diameter)
         radius = diameter/2
-        # print(radius)
         mid_x, mid_y = find_center(x1, x2, y1, y2)
-        # print(mid_x)
-        # print(mid_y)
         subS = []
         for p in point:
             if point == [x1, y1] or point == [x2, y2]:
                 # It's the same point
                 continue
             else:
-                # check if the point is inside the circle
                 x = p[0]
                 y = p[1]
+                # check if the point is inside the circle
                 if ((x - mid_x)**2 + (y - mid_y)**2) < radius**2:
                     subS.append([x, y])
         if not checkSubset(subS, k):
@@ -250,43 +277,41 @@ def kMST(point, k):
         else:
             # here I calculate the entry angle
             angle = math.degrees(math.atan2(y2-y1,x2-x1))
-            # create circumscribing square
-            # print("I'm here with subset", subS)
+            # calculate the edge points
             edgep = edgepair(pair, diameter, distance, angle)
-            # print("this is the edgesquare")
-            # pprint.pprint(edgep)
+            # create circumscribing square
             rootSquare = square(radius, edgep, angle)
-            # This is the subsquare side (d/root(k))
+            # find the subSquares that will divide the square
             subSq = subSquares(diameter, rootSquare, k, angle)
+            # calculate the side of each subSquare
             side = diameter/math.sqrt(k)
+            # pick the points of each subSquare
             pointsPerSquare, pickedPoints = checkforPoints(subSq, point, side, angle)
+            # sort the cells by the number of points from Sc
+            # step 5 of the algorithm
             sortedpointsPerSquare = sorted(pointsPerSquare, key=pointsPerSquare.get, reverse= True)
-            # print("These are the sorted ones", sortedpointsPerSquare)
-            # #Error handling when sortedpointsPerSquare list is out of range
-            # try:       
-            #     while pointCount < k:
-            #         pointCount += pointsPerSquare[sortedpointsPerSquare[i]]    
-            #         i += 1
-            # except IndexError:
-            #     print("Something is wrong here!")
-            # print("__________________\n")
-            selectedSquares = chooseSells(sortedpointsPerSquare, pickedPoints, k)
-            l = len(selectedSquares)
-            # zeros = np.zeros((l,l))
+            # choose the squares
+            selectedPoints = chooseSells(sortedpointsPerSquare, pickedPoints, k)
+            l = len(selectedPoints)
+            # create a matrix with the distances of the nodes (points)
             matrix = []
             for i in range(l):
                 innerlist = []
                 for j in range(l):
-                    innerlist.append(math.hypot(selectedSquares[j][0] - selectedSquares[i][0], \
-                        selectedSquares[j][1] - selectedSquares[i][1]))
+                    innerlist.append(math.hypot(selectedPoints[j][0] - selectedPoints[i][0], \
+                        selectedPoints[j][1] - selectedPoints[i][1]))
                 matrix.append(innerlist)
-
+            # create an numby array
             x = np.array(matrix)
+            # reshape the array with size N x N
             x.reshape(l,l)
+            # create a minimum spanning tree
             tcsr = minimum_spanning_tree(x)
-            tcsr.toarray().astype(float) 
+            tcsr.toarray().astype(float)
+            # calculate the length of the tree and add it to results list
             results.append(tcsr.sum())
-
+    
+    # This error handler is used when the k value is higher than expected 
     try:
         x = min(results)
     except ValueError:
@@ -294,13 +319,7 @@ def kMST(point, k):
         print("Maybe k value is set too high")
         quit()        
     return x
-    
-
-            # print("the side is:", side)
-            # print("the radius is: ", radius)
-        # A = (π/4) × D^2
-        # circle_area = (math.pi/4) * diameter
      
 print("This is the kMST result: ")
 k = int(args.k)
-print(kMST(point, k))
+print(kMST(k))
