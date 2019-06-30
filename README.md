@@ -4,7 +4,7 @@ This is an algorithm which is about **Finding the minimum spanning tree construc
 
 You can find the **paper** on the Cornell University [arXin.org](https://arxiv.org/) papers archiv [here](https://arxiv.org/abs/math/9409222).
 
-This work was given as a bonus project from [Panos Louridas](https://github.com/louridas) in course **Algorithms and Data Structures** during by studies on *Department of Management Science and Technology*, Athens University of Economics and Business [(aueb)](www.aueb.gr).
+This work was given as a bonus project from [Panos Louridas](https://github.com/louridas) in course **Algorithms and Data Structures** during by studies on *Department of Management Science and Technology*, Athens University of Economics and Business [(aueb)](https://www.aueb.gr).
 
 ## Prerequesities
 
